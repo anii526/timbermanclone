@@ -1,7 +1,33 @@
 {
   "compilerOptions": {
-    "rootDir": "./src",
-    "noEmit": true,
-    "strict": true
-  }
+    "module": "commonjs",
+    "target": "es5",
+    "lib": [
+      "es6",
+      "dom",
+      "dom.iterable",
+      "scripthost",
+      "esnext.asynciterable"
+    ],
+    "downlevelIteration": true,
+    "strict": true,
+    "types": [
+      "node",
+      "bluebird-global"
+    ],
+    "sourceMap": true,
+    "allowJs": true,
+    "allowUnreachableCode": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noUnusedLocals": true,
+    // "baseUrl": "./src",
+    "strictNullChecks": false,
+    "skipLibCheck": true
+    // "strictPropertyInitialization": true
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "compileOnSave": false
 }

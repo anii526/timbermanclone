@@ -36,5 +36,12 @@
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.5"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@types/bluebird-global": "^3.5.6",
+    "@types/node": "^10.5.8",
+    "@types/tween.js": "^16.9.0",
+    "babel-polyfill": "^6.26.0",
+    "bluebird-global": "^1.0.1",
+    "tween.js": "^16.6.0"
+  }
 }

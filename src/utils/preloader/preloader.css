@@ -1,0 +1,83 @@
+.loader_example {
+    background-repeat: no-repeat;
+    background-position: 50% 30%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    overflow: hidden;
+    transition: background 0.3s linear;
+    z-index: 999;
+}
+
+.loader_holder {
+    position: relative;
+    height: 100%;
+    transform: scale(.5)
+}
+
+.loader_example {
+    background-color: rgba(0, 0, 0, 1);
+}
+
+.preloader__linepath {
+    display: none;
+    background: url(../../assets/preloader_bg.png) no-repeat center center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 653px;
+    height: 77px;
+    margin-left: -326px;
+    margin-top: -38px;
+}
+
+.preloader__line {
+    display: none;
+    position: absolute;
+    left: 15px;
+    top: 13px;
+    width: 0%;
+    height: 100%;
+    background: url(../../assets/loader_bar_line.png) no-repeat;
+}
+
+.loader_example #percentageProc {
+    display: none;
+    background: url(../../styles/css_sprites.png) -10px -10px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 44px;
+    height: 51px;
+    margin-left: 44px;
+    margin-top: 55px;
+}
+
+.loader_example #percentage1 {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: 55px;
+}
+
+.loader_example #percentage2 {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: 55px;
+    margin-left: -40px;
+}
+
+.loader_example #percentage3 {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: 55px;
+    margin-left: -70px;
+}

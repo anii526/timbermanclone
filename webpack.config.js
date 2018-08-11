@@ -9,7 +9,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const development = process.env.NODE_ENV === 'development';
 
 module.exports = {
-    entry: './src/index.ts',
+    entry: ["babel-polyfill", "./src/index.ts"],
     devtool: development ? 'inline-source-map' : 'source-map',
     output: {
         filename: 'bundle.js',
