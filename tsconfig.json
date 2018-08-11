@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "noEmit": true,
+    "strict": true
+  }
+}
