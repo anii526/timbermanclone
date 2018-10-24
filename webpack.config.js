@@ -6,6 +6,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+
 const development = process.env.NODE_ENV === 'development';
 
 module.exports = {
@@ -35,7 +37,11 @@ module.exports = {
         new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({
             template: 'src/index.html',
-        })
+        }),
+        new CopyWebpackPlugin([{
+            from: 'src/timber',
+            to: 'timber'
+        }], {}),
     ],
     module: {
         rules: [{
@@ -50,7 +56,7 @@ module.exports = {
         ],
     },
     devServer: {
-        port: 8080,
+        port: 8082,
         host: "localhost",
         hot: true,
         inline: true,

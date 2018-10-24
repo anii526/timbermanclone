@@ -18,6 +18,34 @@ export class App {
         this.stage = await this.pixi.init();
         this.initEventResize();
 
+        PIXI.loader.add('bg', './timber/background.png').load((loader: any, resources: any) => {
+            // This creates a texture from a 'bunny.png' image
+            const bg = new PIXI.Sprite(resources.bg.texture);
+            // Add the bunny to the scene we are building
+            this.pixi.app.stage.addChild(bg);
+
+            PIXI.loader.add('bunny', './timber/bunny.png').load((loader2: any, resources2: any) => {
+                // This creates a texture from a 'bunny.png' image
+                const bunny = new PIXI.Sprite(resources2.bunny.texture);
+                // Setup the position of the bunny
+                bunny.x = 500 / 2;
+                bunny.y = 500 / 2;
+
+                // Rotate around the center
+                bunny.anchor.x = 0.5;
+                bunny.anchor.y = 0.5;
+
+                // Add the bunny to the scene we are building
+                this.pixi.app.stage.addChild(bunny);
+
+                // Listen for frame updates
+                this.pixi.app.ticker.add((delta) => {
+                    // each frame we spin the bunny around a bit
+                    bunny.rotation += 0.1 * delta;
+                });
+            });
+        });
+
         // PreloaderManager.instance.setProgress(100, () => {
         //     // вызывается когда заканчивается анимация угасания экрана
         //     console.log('Открылась игра');
