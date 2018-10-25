@@ -1,50 +1,35 @@
+import { Game } from "./game/Game";
 import { GameData } from "./GameData";
 import { PixiHelper } from "./PixiHelper";
+import { ResourcesLoader } from "./ResourcesLoader";
 // import { PreloaderManager } from "./utils/preloader/preloader-manager";
 const TWEEN = require("tween.js");
 export class App {
     public pixi: PixiHelper;
+    public container: PIXI.Container;
     public stage: PIXI.Container;
     public data: GameData;
     constructor() {
         this.pixi = new PixiHelper();
     }
-    public async  init() {
-        // PreloaderManager.instance.init();
-
+    public async init() {
         this.data = new GameData();
         this.data.checkMobile();
 
-        this.stage = await this.pixi.init();
+        // PreloaderManager.instance.init();
+
+        this.container = await this.pixi.init();
         this.initEventResize();
 
-        PIXI.loader.add('bg', './timber/background.png').load((loader: any, resources: any) => {
-            // This creates a texture from a 'bunny.png' image
-            const bg = new PIXI.Sprite(resources.bg.texture);
-            // Add the bunny to the scene we are building
-            this.pixi.app.stage.addChild(bg);
+        const resLoadManager = new ResourcesLoader();
+        await resLoadManager.init();
 
-            PIXI.loader.add('bunny', './timber/bunny.png').load((loader2: any, resources2: any) => {
-                // This creates a texture from a 'bunny.png' image
-                const bunny = new PIXI.Sprite(resources2.bunny.texture);
-                // Setup the position of the bunny
-                bunny.x = 500 / 2;
-                bunny.y = 500 / 2;
+        console.log('GameData');
+        this.stage = this.pixi.app.stage;
 
-                // Rotate around the center
-                bunny.anchor.x = 0.5;
-                bunny.anchor.y = 0.5;
-
-                // Add the bunny to the scene we are building
-                this.pixi.app.stage.addChild(bunny);
-
-                // Listen for frame updates
-                this.pixi.app.ticker.add((delta) => {
-                    // each frame we spin the bunny around a bit
-                    bunny.rotation += 0.1 * delta;
-                });
-            });
-        });
+        const game = new Game();
+        game.init();
+        this.stage.addChild(game);
 
         // PreloaderManager.instance.setProgress(100, () => {
         //     // вызывается когда заканчивается анимация угасания экрана
@@ -94,11 +79,11 @@ export class App {
         const h = this.data.height = window.innerHeight;
         let scale = 1;
 
-        if (this.stage) {
+        if (this.container) {
             // debugger;
             scale = Math.min(w / GameData.ASSETS_WIDTH, h / GameData.ASSETS_HEIGHT);
 
-            this.stage.scale.x = this.stage.scale.y = scale;
+            this.container.scale.x = this.container.scale.y = scale;
             // mainSlot.mainStage.scale.x += 0.008;
 
             this.pixi.app.view.width = (GameData.ASSETS_WIDTH * scale);
