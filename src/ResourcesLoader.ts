@@ -19,6 +19,11 @@ export class ResourcesLoader {
             this.loader.add('./timber/man.json?' + version);
             this.loader.add('bg', './timber/background.png?' + version);
             this.loader.add('bunny', './timber/bunny.png?' + version);
+            this.loader.add('stump', './timber/stump.png?' + version);
+            this.loader.add('trunk1', './timber/trunk1.png?' + version);
+            this.loader.add('trunk2', './timber/trunk2.png?' + version);
+            this.loader.add('branchLeft', './timber/branch1.png?' + version);
+            this.loader.add('branchRight', './timber/branch2.png?' + version);
             // this.loader.add('super_win', 'assets/bigwin/great.png?' + version);
             // this.loader.add('you_win', 'assets/bigwin/you.png?' + version);
             // this.loader.add('shine_white', 'assets/bigwin/shine_white.png?' + version);
