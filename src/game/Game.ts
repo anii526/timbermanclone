@@ -1,5 +1,6 @@
 import "pixi.js";
 import { app } from "..";
+const TWEEN = require("tween.js");
 
 export class Game extends PIXI.Sprite {
     private HEIGHT_TRUNK = 243;
@@ -8,6 +9,7 @@ export class Game extends PIXI.Sprite {
     private trunks: PIXI.Sprite;
     private manContainer: PIXI.Sprite;
     private manPosition: string;
+    private canCut: boolean;
     constructor() {
         super();
     }
@@ -22,6 +24,8 @@ export class Game extends PIXI.Sprite {
         this.stump = new PIXI.Sprite(app.getTexture('stump'));
         this.stump.position.set(352, 1394);
         this.addChild(this.stump);
+
+        this.canCut = true;
 
         this.trunks = new PIXI.Sprite();
         this.addChild(this.trunks);
@@ -59,6 +63,9 @@ export class Game extends PIXI.Sprite {
             man.gotoAndStop(0);
             man.visible = false;
             man2.visible = true;
+            if (this.canCut) {
+                this.cutTrunk();
+            }
         }
         this.manContainer.addChild(man);
 
@@ -121,5 +128,101 @@ export class Game extends PIXI.Sprite {
         trunk.texture = app.getTexture(trunk.name);
         this.trunks.addChild(trunk);
 
+    }
+    private cutTrunk() {
+
+        this.addTrunk();
+
+        const trunkCut = new PIXI.Sprite();
+        trunkCut.position.x = 37
+        trunkCut.position.y = 1151;
+        trunkCut.anchor.set(0.5, 0.5);
+        trunkCut.name = this.trunks.getChildAt(0).name;
+        trunkCut.texture = app.getTexture(trunkCut.name);
+        this.addChild(trunkCut);
+        trunkCut.position.x += trunkCut.width / 2;
+        trunkCut.position.y += trunkCut.height / 2;
+
+        this.trunks.removeChild(this.trunks.getChildAt(0));
+
+        let angle = 0.08;
+        const endPos = new PIXI.Point();
+        if (this.manPosition === 'left') {
+            endPos.x = 1500;
+            angle *= -1;
+        } else {
+            endPos.x = -520;
+        }
+        endPos.y = 1100;
+
+        const startPos = new PIXI.Point(540, 908);
+        const tepmPos = new PIXI.Point(540, 908);
+        new TWEEN.Tween(tepmPos)
+            .to(endPos, 800)
+            .easing(TWEEN.Easing.Linear.None)
+            .onUpdate((value: number) => {
+                if (trunkCut) {
+                    trunkCut.position.x += tepmPos.x - startPos.x;
+                    startPos.x = tepmPos.x;
+                    trunkCut.rotation += angle;
+                }
+            })
+            .onComplete(() => {
+                this.removeChild(trunkCut);
+            })
+            .start();
+        new TWEEN.Tween(tepmPos)
+            .to(endPos, 800)
+            .easing((k: any) => {
+                k = !k;
+                return -4 * k * k + 4 * k + 0;
+            })
+            .onUpdate((value: number) => {
+                if (trunkCut) {
+                    trunkCut.position.y += tepmPos.y - startPos.y;
+                    startPos.y = tepmPos.y;
+                }
+            })
+            .start();
+        this.canCut = false;
+
+        // var self = this;
+        // // Pour chaque morceau (troncs et branches) encore présent sur l'arbre, on lui ajoute une animation de chute.
+        // // Donne l'impression que tout l'arbre tombe pour boucher le trou laissé par le morceau coupé.
+        // this.trunks.children.forEach((trunk) => {
+        //     new TWEEN.Tween(trunk.position)
+        //         .to({ y: trunk.y + this.HEIGHT_TRUNK }, 100)
+        //         .easing(TWEEN.Easing.Linear.None)
+        //         // .onUpdate((value: number) => {
+        //         //     if (trunkCut) {
+        //         //         trunkCut.position.x += tepmPos.x - startPos.x;
+        //         //         startPos.x = tepmPos.x;
+        //         //         trunkCut.rotation += angle;
+        //         //     }
+        //         // })
+        //         .onComplete(() => {
+        //             this.canCut = true;
+        //         })
+        //         .start();
+        // });
+        new TWEEN.Tween(this.trunks.position)
+            .to({ y: this.trunks.y + this.HEIGHT_TRUNK }, 100)
+            .easing(TWEEN.Easing.Linear.None)
+            // .onUpdate((value: number) => {
+            //     if (trunkCut) {
+            //         trunkCut.position.x += tepmPos.x - startPos.x;
+            //         startPos.x = tepmPos.x;
+            //         trunkCut.rotation += angle;
+            //     }
+            // })
+            .onComplete(() => {
+                this.trunks.children.forEach((trunk) => {
+                    trunk.position.y += this.HEIGHT_TRUNK;
+                });
+
+                this.trunks.position.y -= this.HEIGHT_TRUNK;
+                this.canCut = true;
+            })
+            .start();
     }
 }
