@@ -24,7 +24,6 @@ export class App {
         const resLoadManager = new ResourcesLoader();
         await resLoadManager.init();
 
-        console.log('GameData');
         this.stage = this.pixi.app.stage;
 
         const game = new Game();

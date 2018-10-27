@@ -8,8 +8,15 @@ export class Game extends PIXI.Sprite {
     private stump: PIXI.Sprite;
     private trunks: PIXI.Sprite;
     private manContainer: PIXI.Sprite;
+    private timeContainer: PIXI.Sprite;
+    private timeBar: PIXI.Sprite;
+    private timeBarMask: PIXI.Graphics;
+    private timeBarWidth: number;
+    private timeBarWidthComplete: number;
     private manPosition: string;
     private canCut: boolean;
+    private currentScore: number;
+    private currentLevel: number;
     constructor() {
         super();
     }
@@ -18,6 +25,10 @@ export class Game extends PIXI.Sprite {
     }
 
     private createBg() {
+
+        this.currentScore = 0;
+        this.currentLevel = 0;
+
         const bg = new PIXI.Sprite(app.getTexture('bg'));
         this.addChild(bg);
 
@@ -94,8 +105,45 @@ export class Game extends PIXI.Sprite {
                 this.manPosition = 'right';
             }
         })
-
         bg.interactive = true;
+
+        // ---- BARRE DE TEMPS
+        // Container
+        this.timeContainer = new PIXI.Sprite(app.getTexture('timeContainer'));
+        this.timeContainer.anchor.set(0.5, 0.5);
+        this.timeContainer.position.x = this.WIDTH_GAME / 2;
+        this.timeContainer.position.y = 175;
+        this.addChild(this.timeContainer);
+
+        this.timeBar = new PIXI.Sprite(app.getTexture('timeBar'));
+        this.timeBar.anchor.set(0.5, 0.5);
+        this.timeBar.position.x = this.WIDTH_GAME / 2;
+        this.timeBar.position.y = 175;
+        this.addChild(this.timeBar);
+
+        this.timeBarWidth = this.timeBar.width / 2;
+        this.timeBarWidthComplete = this.timeBar.width;
+
+        this.timeBarMask = new PIXI.Graphics();
+        this.timeBarMask.beginFill(0x000);
+        this.timeBarMask.drawRect(0, 0, this.timeBarWidthComplete, this.timeBar.height);
+        this.timeBarMask.endFill();
+        this.timeBarMask.width = this.timeBarWidth;
+        this.timeBarMask.position.x = this.timeBar.position.x - this.timeBarWidth;
+        this.timeBarMask.position.y = this.timeBar.position.y - this.timeBar.height / 2;
+        this.addChild(this.timeBarMask);
+
+        this.timeBar.mask = this.timeBarMask;
+
+        PIXI.ticker.shared.add(this.onTickEvent);
+    }
+    private onTickEvent = (deltaTime: number) => {
+        if (this.timeBarWidth > 0) {
+            this.timeBarWidth -= (0.6 + 0.1 * this.currentLevel);
+            this.timeBarMask.width = this.timeBarWidth;
+        } else {
+            console.log('end');
+        }
     }
 
     private constructTree() {
@@ -186,35 +234,11 @@ export class Game extends PIXI.Sprite {
             .start();
         this.canCut = false;
 
-        // var self = this;
-        // // Pour chaque morceau (troncs et branches) encore présent sur l'arbre, on lui ajoute une animation de chute.
-        // // Donne l'impression que tout l'arbre tombe pour boucher le trou laissé par le morceau coupé.
-        // this.trunks.children.forEach((trunk) => {
-        //     new TWEEN.Tween(trunk.position)
-        //         .to({ y: trunk.y + this.HEIGHT_TRUNK }, 100)
-        //         .easing(TWEEN.Easing.Linear.None)
-        //         // .onUpdate((value: number) => {
-        //         //     if (trunkCut) {
-        //         //         trunkCut.position.x += tepmPos.x - startPos.x;
-        //         //         startPos.x = tepmPos.x;
-        //         //         trunkCut.rotation += angle;
-        //         //     }
-        //         // })
-        //         .onComplete(() => {
-        //             this.canCut = true;
-        //         })
-        //         .start();
-        // });
+        this.increaseScore();
+
         new TWEEN.Tween(this.trunks.position)
             .to({ y: this.trunks.y + this.HEIGHT_TRUNK }, 100)
             .easing(TWEEN.Easing.Linear.None)
-            // .onUpdate((value: number) => {
-            //     if (trunkCut) {
-            //         trunkCut.position.x += tepmPos.x - startPos.x;
-            //         startPos.x = tepmPos.x;
-            //         trunkCut.rotation += angle;
-            //     }
-            // })
             .onComplete(() => {
                 this.trunks.children.forEach((trunk) => {
                     trunk.position.y += this.HEIGHT_TRUNK;
@@ -224,5 +248,17 @@ export class Game extends PIXI.Sprite {
                 this.canCut = true;
             })
             .start();
+    }
+    private increaseScore() {
+        this.currentScore++;
+        if (this.currentScore % 20 === 0) {
+            this.increaseLevel();
+        }
+
+        console.log('currentScore = ' + this.currentScore);
+        console.log('currentLevel = ' + this.currentLevel);
+    }
+    private increaseLevel() {
+        this.currentLevel++;
     }
 }
