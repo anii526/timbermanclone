@@ -3,8 +3,11 @@ import { app } from "..";
 
 export class Game extends PIXI.Sprite {
     private HEIGHT_TRUNK = 243;
+    private WIDTH_GAME = 1080;
     private stump: PIXI.Sprite;
     private trunks: PIXI.Sprite;
+    private manContainer: PIXI.Sprite;
+    private manPosition: string;
     constructor() {
         super();
     }
@@ -37,6 +40,11 @@ export class Game extends PIXI.Sprite {
 
         /////////// man ////////////
 
+        this.manContainer = new PIXI.Sprite();
+        this.manContainer.position.x = 0;
+        this.manContainer.position.y = 1070;
+        this.addChild(this.manContainer);
+
         const man = new PIXI.extras.AnimatedSprite([
             // PIXI.utils.TextureCache['wdoh2.png'],
             PIXI.utils.TextureCache['man1.png'],
@@ -45,8 +53,6 @@ export class Game extends PIXI.Sprite {
         ]);
         man.loop = false;
         man.animationSpeed = 20 / 60;
-        man.position.x = 0;
-        man.position.y = 1070;
         man.visible = false;
         man.gotoAndStop(0);
         man.onComplete = () => {
@@ -54,7 +60,7 @@ export class Game extends PIXI.Sprite {
             man.visible = false;
             man2.visible = true;
         }
-        this.addChild(man);
+        this.manContainer.addChild(man);
 
         const man2 = new PIXI.extras.AnimatedSprite([
             PIXI.utils.TextureCache['wdoh1.png'],
@@ -62,18 +68,27 @@ export class Game extends PIXI.Sprite {
         ]);
         man2.loop = true;
         man2.animationSpeed = 3 / 60;
-        man2.position.x = man.position.x;
-        man2.position.y = man.position.y;
         man2.play();
-        this.addChild(man2);
+        this.manContainer.addChild(man2);
 
-        this.on('pointerdown', () => {
+        bg.on('pointerdown', (e: PIXI.interaction.InteractionEvent) => {
             man2.visible = false;
             man.visible = true;
             man.play();
+            const posX = Math.round(this.toLocal(e.data.global).x);
+
+            if (posX <= this.WIDTH_GAME / 2) {
+                this.manContainer.scale.x = 1;
+                this.manContainer.x = 0;
+                this.manPosition = 'left';
+            } else {
+                this.manContainer.scale.x = -1;
+                this.manContainer.x = 1080;
+                this.manPosition = 'right';
+            }
         })
 
-        this.interactive = true;
+        bg.interactive = true;
     }
 
     private constructTree() {
