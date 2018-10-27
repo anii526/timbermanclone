@@ -26,6 +26,7 @@ export class ResourcesLoader {
             this.loader.add('branchRight', './timber/branch2.png?' + version);
             this.loader.add('timeContainer', './timber/time-container.png?' + version);
             this.loader.add('timeBar', './timber/time-bar.png?' + version);
+            this.loader.add('rip', './timber/rip.png?' + version);
             // this.loader.add('super_win', 'assets/bigwin/great.png?' + version);
             // this.loader.add('you_win', 'assets/bigwin/you.png?' + version);
             // this.loader.add('shine_white', 'assets/bigwin/shine_white.png?' + version);

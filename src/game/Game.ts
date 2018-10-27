@@ -11,6 +11,7 @@ export class Game extends PIXI.Sprite {
     private timeContainer: PIXI.Sprite;
     private timeBar: PIXI.Sprite;
     private timeBarMask: PIXI.Graphics;
+    private rip: PIXI.Sprite;
     private timeBarWidth: number;
     private timeBarWidthComplete: number;
     private manPosition: string;
@@ -76,6 +77,10 @@ export class Game extends PIXI.Sprite {
             man2.visible = true;
             if (this.canCut) {
                 this.cutTrunk();
+                const nameTrunkToCut = this.trunks.getChildAt(0).name;
+                if (nameTrunkToCut === 'branchLeft' && this.manPosition === 'left' || nameTrunkToCut === 'branchRight' && this.manPosition === 'right') {
+                    this.death();
+                }
             }
         }
         this.manContainer.addChild(man);
@@ -88,6 +93,8 @@ export class Game extends PIXI.Sprite {
         man2.animationSpeed = 3 / 60;
         man2.play();
         this.manContainer.addChild(man2);
+
+        this.manPosition = 'left';
 
         bg.on('pointerdown', (e: PIXI.interaction.InteractionEvent) => {
             man2.visible = false;
@@ -103,6 +110,11 @@ export class Game extends PIXI.Sprite {
                 this.manContainer.scale.x = -1;
                 this.manContainer.x = 1080;
                 this.manPosition = 'right';
+            }
+
+            const nameTrunkToCut = this.trunks.getChildAt(0).name;
+            if (nameTrunkToCut === 'branchLeft' && this.manPosition === 'left' || nameTrunkToCut === 'branchRight' && this.manPosition === 'right') {
+                this.death();
             }
         })
         bg.interactive = true;
@@ -142,10 +154,42 @@ export class Game extends PIXI.Sprite {
             this.timeBarWidth -= (0.6 + 0.1 * this.currentLevel);
             this.timeBarMask.width = this.timeBarWidth;
         } else {
-            console.log('end');
+            this.death();
         }
     }
+    private death() {
+        console.log('death');
+        // if (!this.canCut) {
+        //     return;
+        // }
+        // On empêche toute action du joueur
+        // GAME_START = false;
+        // GAME_OVER = true;
+        this.canCut = false;
 
+        new TWEEN.Tween(this.manContainer)
+            .to({ alpha: 0 }, 300)
+            .onComplete(() => {
+                this.rip = new PIXI.Sprite(app.getTexture('rip'));
+                this.addChild(this.rip);
+
+                this.rip.alpha = 0;
+                this.rip.x = (this.manPosition === 'left') ? (this.manContainer.x + 75) : (this.manContainer.x - 330);
+                this.rip.y = this.manContainer.y + (this.manContainer.children[0] as PIXI.Sprite).height - this.rip.height;
+
+                new TWEEN.Tween(this.rip)
+                    .to({ alpha: 1 }, 300)
+                    .start();
+
+                new TWEEN.Tween({ alpha: 0 })
+                    .to({ alpha: 1 }, 1000)
+                    .onComplete(() => {
+                        console.log('finish');
+                    })
+                    .start();
+            })
+            .start();
+    }
     private constructTree() {
         // On construit le reste de l'arbre
         for (let i = 0; i < 4; i++) {
@@ -254,6 +298,8 @@ export class Game extends PIXI.Sprite {
         if (this.currentScore % 20 === 0) {
             this.increaseLevel();
         }
+
+        this.timeBarWidth += 12;
 
         console.log('currentScore = ' + this.currentScore);
         console.log('currentLevel = ' + this.currentLevel);
