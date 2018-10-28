@@ -2,6 +2,8 @@ import { Game } from "./game/Game";
 import { GameData } from "./GameData";
 import { PixiHelper } from "./PixiHelper";
 import { ResourcesLoader } from "./ResourcesLoader";
+import { Sounds } from "./sounds/sounds";
+import { SoundsManager } from "./sounds/sounds-manager";
 // import { PreloaderManager } from "./utils/preloader/preloader-manager";
 const TWEEN = require("tween.js");
 export class App {
@@ -23,6 +25,12 @@ export class App {
 
         const resLoadManager = new ResourcesLoader();
         await resLoadManager.init();
+
+        const sounds = new Sounds();
+        sounds.init();
+        SoundsManager.loadSounds(sounds);
+
+        // SoundsManager.play(Sounds.MUSIC);
 
         this.stage = this.pixi.app.stage;
 

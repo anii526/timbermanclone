@@ -1,5 +1,7 @@
 import "pixi.js";
 import { app } from "..";
+import { Sounds } from "../sounds/sounds";
+import { SoundsManager } from "../sounds/sounds-manager";
 const TWEEN = require("tween.js");
 
 export class Game extends PIXI.Sprite {
@@ -159,13 +161,15 @@ export class Game extends PIXI.Sprite {
     }
     private death() {
         console.log('death');
-        // if (!this.canCut) {
-        //     return;
-        // }
+        if (!this.canCut) {
+            return;
+        }
         // On empêche toute action du joueur
         // GAME_START = false;
         // GAME_OVER = true;
         this.canCut = false;
+
+        SoundsManager.play(Sounds.DEATH);
 
         new TWEEN.Tween(this.manContainer)
             .to({ alpha: 0 }, 300)
@@ -224,6 +228,8 @@ export class Game extends PIXI.Sprite {
     private cutTrunk() {
 
         this.addTrunk();
+
+        SoundsManager.play(Sounds.CUT);
 
         const trunkCut = new PIXI.Sprite();
         trunkCut.position.x = 37
