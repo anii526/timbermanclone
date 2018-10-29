@@ -20,9 +20,14 @@ export class Game extends PIXI.Sprite {
     private canCut: boolean;
     private currentScore: number;
     private currentLevel: number;
-    private summ: PIXI.extras.BitmapText;
+    private summTF: PIXI.extras.BitmapText;
     private textStyle: PIXI.extras.BitmapTextStyle = {
         font: 'Numbers',
+        align: 'center'
+    };
+    private levelTF: PIXI.extras.BitmapText;
+    private textStyleLevel: PIXI.extras.BitmapTextStyle = {
+        font: 'LevelNumbers',
         align: 'center'
     };
     constructor() {
@@ -154,12 +159,25 @@ export class Game extends PIXI.Sprite {
 
         this.timeBar.mask = this.timeBarMask;
 
-        this.summ = new PIXI.extras.BitmapText("0", this.textStyle);
-        (this.summ.anchor as PIXI.Point).set(0.5, 0.5);
-        this.summ.position.x = this.timeBar.position.x;
-        this.summ.position.y = this.timeBar.position.y + 300;
+        this.summTF = new PIXI.extras.BitmapText("0", this.textStyle);
+        (this.summTF.anchor as PIXI.Point).set(0.5, 0.5);
+        this.summTF.position.x = this.timeBar.position.x;
+        this.summTF.position.y = this.timeBar.position.y + 330;
         // this.summ.scale.set(1.2, 1.2);
-        this.addChild(this.summ);
+        this.addChild(this.summTF);
+
+        this.levelTF = new PIXI.extras.BitmapText("0", this.textStyleLevel);
+        (this.levelTF.anchor as PIXI.Point).set(0, 0.5);
+        this.levelTF.position.x = this.timeBar.position.x + 120;
+        this.levelTF.position.y = this.timeBar.position.y + 180;
+        // this.summ.scale.set(1.2, 1.2);
+        this.addChild(this.levelTF);
+
+        const level = new PIXI.Sprite(app.getTexture('level'));
+        level.anchor.set(0.5, 0.5);
+        level.position.x = this.WIDTH_GAME / 2 - 50;
+        level.position.y = this.levelTF.position.y;
+        this.addChild(level);
 
         PIXI.ticker.shared.add(this.onTickEvent);
     }
@@ -319,12 +337,13 @@ export class Game extends PIXI.Sprite {
 
         this.timeBarWidth += 12;
 
-        this.summ.text = this.currentScore.toString();
+        this.summTF.text = this.currentScore.toString();
 
         // console.log('currentScore = ' + this.currentScore);
-        console.log('currentLevel = ' + this.currentLevel);
+        // console.log('currentLevel = ' + this.currentLevel);
     }
     private increaseLevel() {
         this.currentLevel++;
+        this.levelTF.text = this.currentLevel.toString();
     }
 }
