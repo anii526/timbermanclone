@@ -20,6 +20,11 @@ export class Game extends PIXI.Sprite {
     private canCut: boolean;
     private currentScore: number;
     private currentLevel: number;
+    private summ: PIXI.extras.BitmapText;
+    private textStyle: PIXI.extras.BitmapTextStyle = {
+        font: 'Numbers',
+        align: 'center'
+    };
     constructor() {
         super();
     }
@@ -148,6 +153,13 @@ export class Game extends PIXI.Sprite {
         this.addChild(this.timeBarMask);
 
         this.timeBar.mask = this.timeBarMask;
+
+        this.summ = new PIXI.extras.BitmapText("0", this.textStyle);
+        (this.summ.anchor as PIXI.Point).set(0.5, 0.5);
+        this.summ.position.x = this.timeBar.position.x;
+        this.summ.position.y = this.timeBar.position.y + 300;
+        // this.summ.scale.set(1.2, 1.2);
+        this.addChild(this.summ);
 
         PIXI.ticker.shared.add(this.onTickEvent);
     }
@@ -307,7 +319,9 @@ export class Game extends PIXI.Sprite {
 
         this.timeBarWidth += 12;
 
-        console.log('currentScore = ' + this.currentScore);
+        this.summ.text = this.currentScore.toString();
+
+        // console.log('currentScore = ' + this.currentScore);
         console.log('currentLevel = ' + this.currentLevel);
     }
     private increaseLevel() {
