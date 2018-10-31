@@ -5,6 +5,8 @@ import { SoundsManager } from "../sounds/sounds-manager";
 const TWEEN = require("tween.js");
 
 export class Game extends PIXI.Sprite {
+    private GAME_START = false;
+    private GAME_OVER = false;
     private HEIGHT_TRUNK = 243;
     private WIDTH_GAME = 1080;
     private stump: PIXI.Sprite;
@@ -30,6 +32,7 @@ export class Game extends PIXI.Sprite {
         font: 'LevelNumbers',
         align: 'center'
     };
+    private musicPlay: boolean = false;
     constructor() {
         super();
     }
@@ -109,6 +112,16 @@ export class Game extends PIXI.Sprite {
         this.manPosition = 'left';
 
         bg.on('pointerdown', (e: PIXI.interaction.InteractionEvent) => {
+            if (this.GAME_OVER) {
+                return;
+            }
+            // if (this.canCut) {
+            if (!this.GAME_START && !this.musicPlay) {
+                this.GAME_START = true;
+                // On active la musique de fond
+                SoundsManager.play(Sounds.MUSIC);
+                this.musicPlay = true;
+            }
             man2.visible = false;
             man.visible = true;
             man.play();
@@ -128,6 +141,7 @@ export class Game extends PIXI.Sprite {
             if (nameTrunkToCut === 'branchLeft' && this.manPosition === 'left' || nameTrunkToCut === 'branchRight' && this.manPosition === 'right') {
                 this.death();
             }
+            // }
         })
         bg.interactive = true;
 
@@ -182,23 +196,26 @@ export class Game extends PIXI.Sprite {
         PIXI.ticker.shared.add(this.onTickEvent);
     }
     private onTickEvent = (deltaTime: number) => {
-        if (this.timeBarWidth > 0) {
-            this.timeBarWidth -= (0.6 + 0.1 * this.currentLevel);
-            this.timeBarMask.width = this.timeBarWidth;
-        } else {
-            this.death();
+        if (this.GAME_START) {
+            if (this.timeBarWidth > 0) {
+                this.timeBarWidth -= (0.6 + 0.1 * this.currentLevel);
+                this.timeBarMask.width = this.timeBarWidth;
+            } else {
+                this.death();
+            }
         }
     }
     private death() {
         console.log('death');
-        if (!this.canCut) {
-            return;
-        }
+        // if (this.GAME_OVER) {
+        //     return;
+        // }
         // On empêche toute action du joueur
-        // GAME_START = false;
-        // GAME_OVER = true;
+        this.GAME_START = false;
+        this.GAME_OVER = true;
         this.canCut = false;
 
+        SoundsManager.stop(Sounds.MUSIC);
         SoundsManager.play(Sounds.DEATH);
 
         new TWEEN.Tween(this.manContainer)
