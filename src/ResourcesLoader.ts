@@ -31,6 +31,7 @@ export class ResourcesLoader {
             this.loader.add('Numbers', './timber/fonts/Numbers.xml');
             this.loader.add('LevelNumbers', './timber/fonts/LevelNumbers.xml');
             this.loader.add('level', './timber/level.png');
+            this.loader.add('gameOver', './timber/game-over.png');
             // this.loader.add('super_win', 'assets/bigwin/great.png?' + version);
             // this.loader.add('you_win', 'assets/bigwin/you.png?' + version);
             // this.loader.add('shine_white', 'assets/bigwin/shine_white.png?' + version);

@@ -33,6 +33,7 @@ export class Game extends PIXI.Sprite {
         align: 'center'
     };
     private musicPlay: boolean = false;
+    private gameOver: PIXI.Sprite;
     constructor() {
         super();
     }
@@ -236,6 +237,7 @@ export class Game extends PIXI.Sprite {
                     .to({ alpha: 1 }, 1000)
                     .onComplete(() => {
                         console.log('finish');
+                        this.finish();
                     })
                     .start();
             })
@@ -362,5 +364,22 @@ export class Game extends PIXI.Sprite {
     private increaseLevel() {
         this.currentLevel++;
         this.levelTF.text = this.currentLevel.toString();
+    }
+    private finish() {
+        console.log('показать плашку со счетом');
+        this.gameOver = new PIXI.Sprite(app.getTexture('gameOver'));
+        this.gameOver.anchor.set(0.5, 0.5);
+        this.gameOver.position.x = this.WIDTH_GAME / 2;
+        this.gameOver.position.y = 1775 / 2;
+        this.gameOver.interactive = true;
+        this.addChild(this.gameOver);
+
+        this.gameOver.on('pointerdown', (e: PIXI.interaction.InteractionEvent) => {
+            this.reset();
+        })
+    }
+    private reset() {
+        console.log('reset');
+        this.removeChild(this.gameOver);
     }
 }
