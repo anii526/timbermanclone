@@ -23,6 +23,8 @@ export class Game extends PIXI.Sprite {
     private currentScore: number;
     private currentLevel: number;
     private summTF: PIXI.extras.BitmapText;
+    private summBestTF: PIXI.extras.BitmapText;
+    private summScoretTF: PIXI.extras.BitmapText;
     private textStyle: PIXI.extras.BitmapTextStyle = {
         font: 'Numbers',
         align: 'center'
@@ -34,11 +36,40 @@ export class Game extends PIXI.Sprite {
     };
     private musicPlay: boolean = false;
     private gameOver: PIXI.Sprite;
+    private manCut: PIXI.extras.AnimatedSprite;
+    private manIdle: PIXI.extras.AnimatedSprite;
+    private bestScore: number = 0;
+    private instructions: PIXI.Sprite;
+    private instructionsRemove: boolean;
+    private btnPlay: PIXI.Sprite;
     constructor() {
         super();
     }
     public init() {
         this.createBg();
+        this.createOthersElements();
+        this.createInstructions();
+
+        document.addEventListener('keydown', (key: any) => {
+            if (this.GAME_OVER) {
+                if (this.btnPlay.interactive) {
+                    this.reset();
+                }
+            }
+            if (key.keyCode === 37) {
+                this.listener(undefined, 'left');
+            } else if (key.keyCode === 39) {
+                this.listener(undefined, 'right');
+            }
+        });
+    }
+    private createInstructions() {
+        this.instructions = new PIXI.Sprite(app.getTexture('instructions'));
+        this.instructions.anchor.set(0.5, 0.5);
+        this.instructions.position.set(this.WIDTH_GAME / 2, 1300);
+        this.addChild(this.instructions);
+
+        this.instructionsRemove = false;
     }
 
     private createBg() {
@@ -52,6 +83,59 @@ export class Game extends PIXI.Sprite {
         this.stump = new PIXI.Sprite(app.getTexture('stump'));
         this.stump.position.set(352, 1394);
         this.addChild(this.stump);
+
+        bg.on('pointerdown', this.listener);
+        bg.interactive = true;
+    }
+    private listener = (e?: PIXI.interaction.InteractionEvent, action?: string) => {
+        if (this.GAME_OVER) {
+            return;
+        }
+        // if (this.canCut) {
+        if (!this.GAME_START && !this.musicPlay) {
+            this.GAME_START = true;
+            // On active la musique de fond
+            SoundsManager.play(Sounds.MUSIC);
+            this.musicPlay = true;
+            if (!this.instructionsRemove) {
+                this.removeChild(this.instructions);
+                this.instructionsRemove = true;
+            }
+        }
+        this.manIdle.visible = false;
+        this.manCut.visible = true;
+        this.manCut.play();
+        if (e) {
+            const posX = Math.round(this.toLocal(e.data.global).x);
+            if (posX <= this.WIDTH_GAME / 2) {
+                this.manContainer.scale.x = 1;
+                this.manContainer.x = 0;
+                this.manPosition = 'left';
+            } else {
+                this.manContainer.scale.x = -1;
+                this.manContainer.x = 1080;
+                this.manPosition = 'right';
+            }
+        } else if (action) {
+            if (action === 'left') {
+                this.manContainer.scale.x = 1;
+                this.manContainer.x = 0;
+                this.manPosition = 'left';
+            } else {
+                this.manContainer.scale.x = -1;
+                this.manContainer.x = 1080;
+                this.manPosition = 'right';
+            }
+        }
+
+        const nameTrunkToCut = this.trunks.getChildAt(0).name;
+        if (nameTrunkToCut === 'branchLeft' && this.manPosition === 'left' || nameTrunkToCut === 'branchRight' && this.manPosition === 'right') {
+            this.death();
+        }
+        // }
+    }
+
+    private createOthersElements() {
 
         this.canCut = true;
 
@@ -77,20 +161,20 @@ export class Game extends PIXI.Sprite {
         this.manContainer.position.y = 1070;
         this.addChild(this.manContainer);
 
-        const man = new PIXI.extras.AnimatedSprite([
+        this.manCut = new PIXI.extras.AnimatedSprite([
             // PIXI.utils.TextureCache['wdoh2.png'],
             PIXI.utils.TextureCache['man1.png'],
             PIXI.utils.TextureCache['man2.png'],
             PIXI.utils.TextureCache['man3.png']
         ]);
-        man.loop = false;
-        man.animationSpeed = 20 / 60;
-        man.visible = false;
-        man.gotoAndStop(0);
-        man.onComplete = () => {
-            man.gotoAndStop(0);
-            man.visible = false;
-            man2.visible = true;
+        this.manCut.loop = false;
+        this.manCut.animationSpeed = 20 / 60;
+        this.manCut.visible = false;
+        this.manCut.gotoAndStop(0);
+        this.manCut.onComplete = () => {
+            this.manCut.gotoAndStop(0);
+            this.manCut.visible = false;
+            this.manIdle.visible = true;
             if (this.canCut) {
                 this.cutTrunk();
                 const nameTrunkToCut = this.trunks.getChildAt(0).name;
@@ -99,52 +183,18 @@ export class Game extends PIXI.Sprite {
                 }
             }
         }
-        this.manContainer.addChild(man);
+        this.manContainer.addChild(this.manCut);
 
-        const man2 = new PIXI.extras.AnimatedSprite([
+        this.manIdle = new PIXI.extras.AnimatedSprite([
             PIXI.utils.TextureCache['wdoh1.png'],
             PIXI.utils.TextureCache['wdoh2.png']
         ]);
-        man2.loop = true;
-        man2.animationSpeed = 3 / 60;
-        man2.play();
-        this.manContainer.addChild(man2);
+        this.manIdle.loop = true;
+        this.manIdle.animationSpeed = 3 / 60;
+        this.manIdle.play();
+        this.manContainer.addChild(this.manIdle);
 
         this.manPosition = 'left';
-
-        bg.on('pointerdown', (e: PIXI.interaction.InteractionEvent) => {
-            if (this.GAME_OVER) {
-                return;
-            }
-            // if (this.canCut) {
-            if (!this.GAME_START && !this.musicPlay) {
-                this.GAME_START = true;
-                // On active la musique de fond
-                SoundsManager.play(Sounds.MUSIC);
-                this.musicPlay = true;
-            }
-            man2.visible = false;
-            man.visible = true;
-            man.play();
-            const posX = Math.round(this.toLocal(e.data.global).x);
-
-            if (posX <= this.WIDTH_GAME / 2) {
-                this.manContainer.scale.x = 1;
-                this.manContainer.x = 0;
-                this.manPosition = 'left';
-            } else {
-                this.manContainer.scale.x = -1;
-                this.manContainer.x = 1080;
-                this.manPosition = 'right';
-            }
-
-            const nameTrunkToCut = this.trunks.getChildAt(0).name;
-            if (nameTrunkToCut === 'branchLeft' && this.manPosition === 'left' || nameTrunkToCut === 'branchRight' && this.manPosition === 'right') {
-                this.death();
-            }
-            // }
-        })
-        bg.interactive = true;
 
         // ---- BARRE DE TEMPS
         // Container
@@ -207,14 +257,10 @@ export class Game extends PIXI.Sprite {
         }
     }
     private death() {
-        console.log('death');
-        // if (this.GAME_OVER) {
-        //     return;
-        // }
-        // On empêche toute action du joueur
         this.GAME_START = false;
         this.GAME_OVER = true;
         this.canCut = false;
+        this.musicPlay = false;
 
         SoundsManager.stop(Sounds.MUSIC);
         SoundsManager.play(Sounds.DEATH);
@@ -222,7 +268,9 @@ export class Game extends PIXI.Sprite {
         new TWEEN.Tween(this.manContainer)
             .to({ alpha: 0 }, 300)
             .onComplete(() => {
-                this.rip = new PIXI.Sprite(app.getTexture('rip'));
+                if (!this.rip) {
+                    this.rip = new PIXI.Sprite(app.getTexture('rip'));
+                }
                 this.addChild(this.rip);
 
                 this.rip.alpha = 0;
@@ -233,10 +281,10 @@ export class Game extends PIXI.Sprite {
                     .to({ alpha: 1 }, 300)
                     .start();
 
-                new TWEEN.Tween({ alpha: 0 })
-                    .to({ alpha: 1 }, 1000)
+                new TWEEN.Tween({ end: 0 })
+                    .to({ end: 1 }, 1000)
                     .onComplete(() => {
-                        console.log('finish');
+                        ;
                         this.finish();
                     })
                     .start();
@@ -357,29 +405,114 @@ export class Game extends PIXI.Sprite {
         this.timeBarWidth += 12;
 
         this.summTF.text = this.currentScore.toString();
-
-        // console.log('currentScore = ' + this.currentScore);
-        // console.log('currentLevel = ' + this.currentLevel);
     }
     private increaseLevel() {
         this.currentLevel++;
         this.levelTF.text = this.currentLevel.toString();
     }
     private finish() {
-        console.log('показать плашку со счетом');
-        this.gameOver = new PIXI.Sprite(app.getTexture('gameOver'));
-        this.gameOver.anchor.set(0.5, 0.5);
-        this.gameOver.position.x = this.WIDTH_GAME / 2;
-        this.gameOver.position.y = 1775 / 2;
-        this.gameOver.interactive = true;
-        this.addChild(this.gameOver);
+        if (!this.gameOver) {
+            this.gameOver = new PIXI.Sprite(app.getTexture('gameOver'));
+            this.gameOver.anchor.set(0.5, 0);
+            this.gameOver.position.x = this.WIDTH_GAME / 2;
 
-        this.gameOver.on('pointerdown', (e: PIXI.interaction.InteractionEvent) => {
-            this.reset();
-        })
+            this.summBestTF = new PIXI.extras.BitmapText("0", this.textStyle);
+            (this.summBestTF.anchor as PIXI.Point).set(0.5, 0.5);
+            this.summBestTF.position.x = this.gameOver.position.x;
+            this.summBestTF.position.y = this.gameOver.position.y + 780;
+
+            this.summScoretTF = new PIXI.extras.BitmapText("0", this.textStyle);
+            (this.summScoretTF.anchor as PIXI.Point).set(0.5, 0.5);
+            this.summScoretTF.position.x = this.gameOver.position.x;
+            this.summScoretTF.position.y = this.gameOver.position.y + 990;
+
+            this.btnPlay = new PIXI.Sprite(app.getTexture('btnPlay'));
+            this.btnPlay.anchor.set(0.5, 0.5);
+            this.btnPlay.position.x = this.gameOver.position.x;
+            this.btnPlay.position.y = this.gameOver.position.y + 1250;
+            this.btnPlay.on('pointerdown', (e: PIXI.interaction.InteractionEvent) => {
+                this.reset();
+            })
+        }
+        this.addChild(this.gameOver);
+        this.gameOver.position.y = - this.gameOver.height;
+
+        if (this.currentScore > this.bestScore) {
+            this.bestScore = this.currentScore;
+        }
+        this.summBestTF.text = this.bestScore.toString();
+        this.summBestTF.alpha = 0;
+        this.addChild(this.summBestTF);
+
+        this.summScoretTF.text = this.currentScore.toString();
+        this.summScoretTF.alpha = 0;
+        this.addChild(this.summScoretTF);
+
+        this.btnPlay.alpha = 0;
+        this.btnPlay.interactive = false;
+        this.addChild(this.btnPlay);
+
+        new TWEEN.Tween(this.gameOver.position)
+            .to({ y: 0 }, 400)
+            .easing(TWEEN.Easing.Linear.None)
+            .onComplete(() => {
+                //
+                // this.gameOver.interactive = true;
+                const obj = { alpha: 0 };
+                new TWEEN.Tween(obj)
+                    .to({ alpha: 1 }, 300)
+                    .onUpdate((value: number) => {
+                        this.btnPlay.alpha = this.summBestTF.alpha = this.summScoretTF.alpha = obj.alpha;
+                    })
+                    .onComplete(() => {
+                        this.btnPlay.interactive = true;
+                    })
+                    .start();
+            })
+            .start();
     }
     private reset() {
-        console.log('reset');
         this.removeChild(this.gameOver);
+        this.removeChild(this.summBestTF);
+        this.removeChild(this.summScoretTF);
+        this.removeChild(this.btnPlay);
+        this.btnPlay.interactive = false;
+
+        while (this.trunks.children.length > 0) {
+            this.trunks.removeChildAt(0);
+        }
+
+        const trunk1 = new PIXI.Sprite(app.getTexture('trunk1'));
+        trunk1.position.set(37, 1151);
+        trunk1.name = 'trunk1';
+        this.trunks.addChild(trunk1);
+
+        const trunk2 = new PIXI.Sprite(app.getTexture('trunk2'));
+        trunk2.position.set(37, 1151 - this.HEIGHT_TRUNK);
+        trunk2.name = 'trunk2';
+        this.trunks.addChild(trunk2);
+
+        this.constructTree();
+
+        this.removeChild(this.rip);
+
+        this.manContainer.alpha = 1;
+
+        this.manPosition = 'left';
+        this.manContainer.scale.x = 1;
+        this.manContainer.x = 0;
+
+        this.summTF.text = '0';
+        this.currentScore = 0;
+
+        this.levelTF.text = '0';
+        this.currentLevel = 0;
+
+        this.timeBarWidth = this.timeBar.width / 2;
+        this.timeBarMask.width = this.timeBarWidth;
+
+        this.GAME_OVER = false;
+        this.canCut = true;
+        this.musicPlay = false;
     }
 }

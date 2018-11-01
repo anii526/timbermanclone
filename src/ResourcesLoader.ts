@@ -32,6 +32,8 @@ export class ResourcesLoader {
             this.loader.add('LevelNumbers', './timber/fonts/LevelNumbers.xml');
             this.loader.add('level', './timber/level.png');
             this.loader.add('gameOver', './timber/game-over.png');
+            this.loader.add('btnPlay', './timber/btn-play.png');
+            this.loader.add('instructions', './timber/instructions.png');
             // this.loader.add('super_win', 'assets/bigwin/great.png?' + version);
             // this.loader.add('you_win', 'assets/bigwin/you.png?' + version);
             // this.loader.add('shine_white', 'assets/bigwin/shine_white.png?' + version);
@@ -40,12 +42,12 @@ export class ResourcesLoader {
             // this.loader.add('info_back', 'assets/info_back.png?' + version);
 
             this.loader.on('progress', (loader, res) => {
-                // console.log(loader.progress);
+                // (loader.progress);
                 // PreloaderManager.instance.setProgress(loader.progress > 90 ? 90 : loader.progress)
             });
 
             this.loader.once("complete", (loader, res) => {
-                console.log('Нужно сделать загрузку шрифтов');
+                // ('Нужно сделать загрузку шрифтов');
                 // WebFont.load({
                 //     custom: {
                 //         families: this.fontFamilies,

@@ -40,7 +40,7 @@ export class App {
 
         // PreloaderManager.instance.setProgress(100, () => {
         //     // вызывается когда заканчивается анимация угасания экрана
-        //     console.log('Открылась игра');
+        //     ('Открылась игра');
         //     // SoundsManager.play(Sounds.MUSIC);
         // });
     }

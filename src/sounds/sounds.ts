@@ -25,7 +25,7 @@ export class Sounds {
                     this.staticPath + name + ".mp3?" + this.version,
                     this.staticPath + name + ".ogg?" + this.version,
                 ],
-                volume: 0.2,
+                volume: 0.3,
                 loop: false,
                 autoplay: false
             }
@@ -35,5 +35,8 @@ export class Sounds {
         const back: ISoundResource = this.map.get(Sounds.MUSIC);
         back.loop = true;
         back.autoplay = true;
+
+        const cut: ISoundResource = this.map.get(Sounds.CUT);
+        cut.volume = 0.5;
     }
 }

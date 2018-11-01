@@ -32,7 +32,7 @@ export abstract class SoundsManager {
             SoundsManager.load(value);
         }
     }
-    public static play(name: string, attenuationBack: boolean = false) {
+    public static play(name: string) {
         const soundData: ISoundResource | undefined = this.sounds.map.get(name);
         if (soundData) {
             const se: SoundEnity = new SoundEnity(name, soundData);
@@ -45,26 +45,6 @@ export abstract class SoundsManager {
                 this.music = se;
                 this.soundBackCurrentVolume = this.getVolumeBack();
             }
-            if (attenuationBack) {
-                this.changeVolumeBack(0.08);
-                // se.sound.once('end', () => {
-                //     this.changeVolumeBack(soundBackCurrentVolume);
-                //     console.log(soundBackCurrentVolume);
-                // });
-            }
-
-            // const howl = new Howl({
-            //     src: sound.files,
-            //     autoplay: sound.autoplay,
-            //     loop: sound.loop,
-            //     volume: sound.volume,
-            //     preload: true
-            // });
-            // howl.play();
-            // this.soundsList.push(howl);
-            // .play();
-        } else {
-            // console.log(name + " : Этот звук не предусмотрен в данной игре ");
         }
     }
     public static stop(name: string) {
@@ -82,7 +62,6 @@ export abstract class SoundsManager {
                 this.onCompleteSound(iterator);
             }
         }
-        // console.log('this.soundsList : ' + this.soundsList.length);
     }
     public static load(sound: ISoundResource) {
         // tslint:disable-next-line:no-unused-expression
@@ -108,13 +87,6 @@ export abstract class SoundsManager {
         if (ind !== -1) {
             this.soundsList.splice(ind, 1);
         }
-        // console.log('this.soundsList : ' + this.soundsList.length);
-        // // console.log(this.soundsList);
-        // for (const iterator of this.soundsList) {
-        //     console.log(iterator.nameSound);
-        // }
-        // console.log(' ');
-        // debugger;
     }
     private static getVolumeBack() {
         return (this.music) ? this.music.sound.volume() : 0;
