@@ -1,4 +1,4 @@
-import "pixi.js";
+// import "pixi.js";
 import { GameData } from "./GameData";
 export class PixiHelper {
     public app: PIXI.Application;

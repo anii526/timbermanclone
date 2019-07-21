@@ -1,7 +1,9 @@
 const path = require('path');
 
+const webpack = require('webpack');
+
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
@@ -15,7 +17,7 @@ module.exports = {
     devtool: development ? 'inline-source-map' : 'source-map',
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(process.cwd(), 'dist'),
     },
     resolve: {
         extensions: ['.js', '.json', '.ts'],
@@ -31,10 +33,14 @@ module.exports = {
         ],
     },
     plugins: [
+        new webpack.ProgressPlugin(),
+        new webpack.ProvidePlugin({
+            PIXI: 'pixi.js'
+        }),
         new MiniCssExtractPlugin({
             filename: 'styles.css',
         }),
-        new CleanWebpackPlugin(['dist']),
+        new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             template: 'src/index.html',
         }),
@@ -57,7 +63,7 @@ module.exports = {
     },
     devServer: {
         port: 8082,
-        host: "192.168.1.101",
+        host: "192.168.1.104",
         hot: true,
         inline: true,
         open: true,

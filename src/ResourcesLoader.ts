@@ -6,11 +6,11 @@ import * as PIXI from 'pixi.js';
  * Created by aniii526 on 1.09.2017.
  */
 export class ResourcesLoader {
-    protected loader: PIXI.loaders.Loader;
+    protected loader: PIXI.Loader;
     protected fontFamilies: string[];
     protected fontUrls: string[];
     constructor() {
-        this.loader = new PIXI.loaders.Loader();
+        this.loader = new PIXI.Loader();
     }
     public init() {
         return new Promise((resolve, reject) => {

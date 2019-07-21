@@ -1,4 +1,4 @@
-import "pixi.js";
+import * as PIXI from 'pixi.js';
 import { app } from "..";
 import { Sounds } from "../sounds/sounds";
 import { SoundsManager } from "../sounds/sounds-manager";
@@ -22,22 +22,22 @@ export class Game extends PIXI.Sprite {
     private canCut: boolean;
     private currentScore: number;
     private currentLevel: number;
-    private summTF: PIXI.extras.BitmapText;
-    private summBestTF: PIXI.extras.BitmapText;
-    private summScoretTF: PIXI.extras.BitmapText;
-    private textStyle: PIXI.extras.BitmapTextStyle = {
+    private summTF: PIXI.BitmapText;
+    private summBestTF: PIXI.BitmapText;
+    private summScoretTF: PIXI.BitmapText;
+    private textStyle:any = {
         font: 'Numbers',
         align: 'center'
     };
-    private levelTF: PIXI.extras.BitmapText;
-    private textStyleLevel: PIXI.extras.BitmapTextStyle = {
+    private levelTF: PIXI.BitmapText;
+    private textStyleLevel:any = {
         font: 'LevelNumbers',
         align: 'center'
     };
     private musicPlay: boolean = false;
     private gameOver: PIXI.Sprite;
-    private manCut: PIXI.extras.AnimatedSprite;
-    private manIdle: PIXI.extras.AnimatedSprite;
+    private manCut: PIXI.AnimatedSprite;
+    private manIdle: PIXI.AnimatedSprite;
     private bestScore: number = 0;
     private instructions: PIXI.Sprite;
     private instructionsRemove: boolean;
@@ -161,7 +161,7 @@ export class Game extends PIXI.Sprite {
         this.manContainer.position.y = 1070;
         this.addChild(this.manContainer);
 
-        this.manCut = new PIXI.extras.AnimatedSprite([
+        this.manCut = new PIXI.AnimatedSprite([
             // PIXI.utils.TextureCache['wdoh2.png'],
             PIXI.utils.TextureCache['man1.png'],
             PIXI.utils.TextureCache['man2.png'],
@@ -185,7 +185,7 @@ export class Game extends PIXI.Sprite {
         }
         this.manContainer.addChild(this.manCut);
 
-        this.manIdle = new PIXI.extras.AnimatedSprite([
+        this.manIdle = new PIXI.AnimatedSprite([
             PIXI.utils.TextureCache['wdoh1.png'],
             PIXI.utils.TextureCache['wdoh2.png']
         ]);
@@ -224,14 +224,14 @@ export class Game extends PIXI.Sprite {
 
         this.timeBar.mask = this.timeBarMask;
 
-        this.summTF = new PIXI.extras.BitmapText("0", this.textStyle);
+        this.summTF = new PIXI.BitmapText("0", this.textStyle);
         (this.summTF.anchor as PIXI.Point).set(0.5, 0.5);
         this.summTF.position.x = this.timeBar.position.x;
         this.summTF.position.y = this.timeBar.position.y + 330;
         // this.summ.scale.set(1.2, 1.2);
         this.addChild(this.summTF);
 
-        this.levelTF = new PIXI.extras.BitmapText("0", this.textStyleLevel);
+        this.levelTF = new PIXI.BitmapText("0", this.textStyleLevel);
         (this.levelTF.anchor as PIXI.Point).set(0, 0.5);
         this.levelTF.position.x = this.timeBar.position.x + 120;
         this.levelTF.position.y = this.timeBar.position.y + 180;
@@ -244,7 +244,7 @@ export class Game extends PIXI.Sprite {
         level.position.y = this.levelTF.position.y;
         this.addChild(level);
 
-        PIXI.ticker.shared.add(this.onTickEvent);
+        PIXI.Ticker.shared.add(this.onTickEvent);
     }
     private onTickEvent = (deltaTime: number) => {
         if (this.GAME_START) {
@@ -416,12 +416,12 @@ export class Game extends PIXI.Sprite {
             this.gameOver.anchor.set(0.5, 0);
             this.gameOver.position.x = this.WIDTH_GAME / 2;
 
-            this.summBestTF = new PIXI.extras.BitmapText("0", this.textStyle);
+            this.summBestTF = new PIXI.BitmapText("0", this.textStyle);
             (this.summBestTF.anchor as PIXI.Point).set(0.5, 0.5);
             this.summBestTF.position.x = this.gameOver.position.x;
             this.summBestTF.position.y = this.gameOver.position.y + 780;
 
-            this.summScoretTF = new PIXI.extras.BitmapText("0", this.textStyle);
+            this.summScoretTF = new PIXI.BitmapText("0", this.textStyle);
             (this.summScoretTF.anchor as PIXI.Point).set(0.5, 0.5);
             this.summScoretTF.position.x = this.gameOver.position.x;
             this.summScoretTF.position.y = this.gameOver.position.y + 990;
