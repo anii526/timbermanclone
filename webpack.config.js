@@ -3,7 +3,9 @@ const path = require('path');
 const webpack = require('webpack');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const {
+    CleanWebpackPlugin
+} = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
@@ -56,14 +58,24 @@ module.exports = {
                 use: 'babel-loader',
             },
             {
+                test: /\.(png|jpe?g|gif)$/i,
+                use: [{
+                    loader: 'file-loader',
+                    options: {
+                        esModule: false,
+                    },
+                }, ],
+            },
+            {
                 test: /\.css$/,
                 use: [MiniCssExtractPlugin.loader, 'css-loader'],
             },
+
         ],
     },
     devServer: {
-        port: 8082,
-        host: "192.168.1.104",
+        port: 8080,
+        host: "192.168.1.108",
         hot: true,
         inline: true,
         open: true,

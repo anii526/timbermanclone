@@ -11,6 +11,7 @@ export class App {
     public container: PIXI.Container;
     public stage: PIXI.Container;
     public data: GameData;
+    // public root: any;
     constructor() {
         this.pixi = new PixiHelper();
     }
@@ -19,6 +20,8 @@ export class App {
         this.data.checkMobile();
 
         // PreloaderManager.instance.init();
+
+        // this.root = document.getElementById("root");
 
         this.container = await this.pixi.init();
         this.initEventResize();
@@ -44,12 +47,19 @@ export class App {
         //     // SoundsManager.play(Sounds.MUSIC);
         // });
     }
-    public getTexturesForName(nameTextures: string, countTextures: number, nameResolution: string = '.png'): PIXI.Texture[] {
+    public getTexturesForName(
+        nameTextures: string,
+        countTextures: number,
+        nameResolution: string = ".png"
+    ): PIXI.Texture[] {
         const texrures: PIXI.Texture[] = [];
-        let indexName: string = '';
+        let indexName: string = "";
         for (let i: number = 1; i <= countTextures; i++) {
             indexName = i.toString();
-            const texture: PIXI.Texture = PIXI.utils.TextureCache[nameTextures + indexName + nameResolution];
+            const texture: PIXI.Texture =
+                PIXI.utils.TextureCache[
+                    nameTextures + indexName + nameResolution
+                ];
             if (texture) {
                 texrures.push(texture);
             }
@@ -60,8 +70,7 @@ export class App {
         const texture: PIXI.Texture = PIXI.utils.TextureCache[name];
         if (!texture) {
             throw new Error("Нет Текстуры для: " + name);
-        }
-        else {
+        } else {
             return texture;
         }
     }
@@ -71,33 +80,62 @@ export class App {
     }
     private initEventResize(): void {
         if (!this.data.isMobile) {
-            window.addEventListener('resize', () => { this.resize(); }, false);
+            window.addEventListener(
+                "resize",
+                () => {
+                    this.resize();
+                },
+                false
+            );
             this.resize();
         } else {
-            window.addEventListener('orientationchange', () => { this.resize(); }, false);
-            window.addEventListener('resize', () => { this.resize(); }, false);
+            window.addEventListener(
+                "orientationchange",
+                () => {
+                    this.resize();
+                },
+                false
+            );
+            window.addEventListener(
+                "resize",
+                () => {
+                    this.resize();
+                },
+                false
+            );
             this.resize();
         }
         this.animate(0);
     }
     private resize() {
         // ресайз возможно подвергнется тотальной переработке.
-        const w = this.data.width = window.innerWidth;
-        const h = this.data.height = window.innerHeight;
+        const w = (this.data.width = window.innerWidth);
+        const h = (this.data.height = window.innerHeight);
         let scale = 1;
 
         if (this.container) {
             // debugger;
-            scale = Math.min(w / GameData.ASSETS_WIDTH, h / GameData.ASSETS_HEIGHT);
+            scale = Math.min(
+                w / GameData.ASSETS_WIDTH,
+                h / GameData.ASSETS_HEIGHT
+            );
 
             this.container.scale.x = this.container.scale.y = scale;
             // mainSlot.mainStage.scale.x += 0.008;
 
-            this.pixi.app.view.width = (GameData.ASSETS_WIDTH * scale);
-            this.pixi.app.view.height = (GameData.ASSETS_HEIGHT * scale);
-            this.pixi.app.view.style.left = (w - this.pixi.app.view.width) / 2 + "px";
-            this.pixi.app.view.style.top = (h - this.pixi.app.view.height) / 2 + "px";
-            this.pixi.app.renderer.resize(this.pixi.app.view.width, this.pixi.app.view.height);
+            this.pixi.app.view.width = GameData.ASSETS_WIDTH * scale;
+            this.pixi.app.view.height = GameData.ASSETS_HEIGHT * scale;
+            this.pixi.app.view.style.left =
+                (w - this.pixi.app.view.width) / 2 + "px";
+            this.pixi.app.view.style.top =
+                (h - this.pixi.app.view.height) / 2 + "px";
+            this.pixi.app.renderer.resize(
+                this.pixi.app.view.width,
+                this.pixi.app.view.height
+            );
+
+            // this.root.style.width = window.innerWidth + "px";
+            // this.root.style.height = window.innerHeight + "px";
         }
     }
 }
