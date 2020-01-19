@@ -24,7 +24,6 @@ export class ResourcesLoader {
             this.loader.add("man1.png", "./timber/man1.png?" + version);
             this.loader.add("man2.png", "./timber/man2.png?" + version);
             this.loader.add("man3.png", "./timber/man3.png?" + version);
-            this.loader.add("bunny", "./timber/bunny.png?" + version);
             this.loader.add("stump", "./timber/stump.png?" + version);
             this.loader.add("trunk1", "./timber/trunk1.png?" + version);
             this.loader.add("trunk2", "./timber/trunk2.png?" + version);
